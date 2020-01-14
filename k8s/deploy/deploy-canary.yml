@@ -1,0 +1,24 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: webapp-canary
+spec:
+  replicas: 1
+  template: 
+    metadata:
+      name: app
+      labels:
+        role: app
+        env: canary
+    spec:
+      containers:
+        - name: webapp
+          image: gcr.io/project/image-name
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 3000
+          env:
+          - name: RAILS_SERVE_STATIC_FILES
+            value: "true"
+          - name:  SECRET_KEY_BASE
+            value: 6b91d9747f2c73feb656393f1ca753ae53ff61350eb32b566ebffa92d770f0e8a4a3c14595aea08ffdff11ea84d6d413c42afa0a66adbd19d262d51e31ba2e58

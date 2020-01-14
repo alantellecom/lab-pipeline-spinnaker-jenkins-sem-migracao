@@ -1,0 +1,223 @@
+{
+  "name": "Deploy",
+  "application": "myapp",
+  "id": "2650c7c9-dd0a-4f59-ab0d-9c96a34cd1bc",
+  "appConfig": {},
+  "keepWaitingPipelines": true,
+  "lastModifiedBy": "anonymous",
+  "limitConcurrent": true,
+  "parallel": true,
+  "expectedArtifacts": [
+    {
+      "defaultArtifact": {
+        "kind": "default.gcs",
+        "name": "gs://rails-lab-264600-kubernetes-manifests/deploy/deploy-prod.yml",
+        "reference": "gs://rails-lab-264600-kubernetes-manifests/deploy/deploy-prod.yml",
+        "type": "gcs/object"
+      },
+      "id": "app-production-123",
+      "matchArtifact": {
+        "kind": "gcs",
+        "name": "gs://rails-lab-264600-kubernetes-manifests/deploy/deploy-prod.yml",
+        "type": "gcs/object"
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": true,
+      "usePriorExecution": false
+    },
+    {
+      "defaultArtifact": {
+        "kind": "default.gcs",
+        "name": "gs://rails-lab-264600-kubernetes-manifests/deploy/service-prod.yml",
+        "reference": "gs://rails-lab-264600-kubernetes-manifests/deploy/service-prod.yml",
+        "type": "gcs/object"
+      },
+      "id": "service-production-123",
+      "matchArtifact": {
+        "kind": "gcs",
+        "name": "gs://rails-lab-264600-kubernetes-manifests/deploy/service-prod.yml",
+        "type": "gcs/object"
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": true,
+      "usePriorExecution": false
+    },
+    {
+      "defaultArtifact": {
+        "kind": "default.docker",
+        "name": "gcr.io/rails-lab-264600/sample-app",
+        "reference": "gcr.io/rails-lab-264600/sample-app:v1",
+        "type": "docker/image",
+        "version": "v1"
+      },
+      "id": "docker-image-123",
+      "matchArtifact": {
+        "kind": "docker",
+        "name": "gcr.io/rails-lab-264600/sample-app",
+        "type": "docker/image"
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": true,
+      "usePriorExecution": false
+    },
+    {
+      "defaultArtifact": {
+        "kind": "default.gcs",
+        "name": "gs://rails-lab-264600-kubernetes-manifests/deploy/deploy-canary.yml",
+        "reference": "gs://rails-lab-264600-kubernetes-manifests/deploy/deploy-canary.yml",
+        "type": "gcs/object"
+      },
+      "id": "app-canary-123",
+      "matchArtifact": {
+        "kind": "gcs",
+        "name": "gs://rails-lab-264600-kubernetes-manifests/deploy/deploy-canary.yml",
+        "type": "gcs/object"
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": true
+    },
+    {
+      "defaultArtifact": {
+        "kind": "default.gcs",
+        "name": "gs://rails-lab-264600-kubernetes-manifests/deploy/service-canary.yml",
+        "reference": "gs://rails-lab-264600-kubernetes-manifests/deploy/service-canary.yml",
+        "type": "gcs/object"
+      },
+      "id": "service-canary-123",
+      "matchArtifact": {
+        "kind": "gcs",
+        "name": "gs://rails-lab-264600-kubernetes-manifests/deploy/service-canary.yml",
+        "type": "gcs/object"
+      },
+      "useDefaultArtifact": true,
+      "usePriorArtifact": true
+    }
+  ],
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "anonymous",
+  "limitConcurrent": true,
+  "parallel": true,
+  "stages": [
+    {
+      "account": "default",
+      "cloudProvider": "kubernetes",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "manifestArtifactAccount": "gcs-rails-lab-264600",
+      "manifestArtifactId": "app-canary-123",
+      "moniker": {
+        "app": "myapp"
+      },
+      "name": "Deploy Canary App",
+      "refId": "1",
+      "relationships": {
+        "loadBalancers": [],
+        "securityGroups": []
+      },
+      "requiredArtifactIds": [
+        "docker-image-123"
+      ],
+      "requisiteStageRefIds": [],
+      "source": "artifact",
+      "type": "deployManifest"
+    },
+    {
+      "account": "default",
+      "cloudProvider": "kubernetes",
+      "manifestArtifactAccount": "gcs-rails-lab-264600",
+      "manifestArtifactId": "service-canary-123",
+      "moniker": {
+        "app": "myapp"
+      },
+      "name": "Deploy Canary Service",
+      "refId": "2",
+      "relationships": {
+        "loadBalancers": [],
+        "securityGroups": []
+      },
+      "requisiteStageRefIds": [],
+      "source": "artifact",
+      "type": "deployManifest"
+    },
+    {
+      "failPipeline": true,
+      "judgmentInputs": [],
+      "name": "Deploy to Production?",
+      "notifications": [],
+      "refId": "3",
+      "requisiteStageRefIds": [
+        "1",
+        "2"
+      ],
+      "type": "manualJudgment"
+    },
+    {
+      "account": "default",
+      "cloudProvider": "kubernetes",
+      "completeOtherBranchesThenFail": false,
+      "continuePipeline": false,
+      "failPipeline": true,
+      "manifestArtifactAccount": "gcs-rails-lab-264600",
+      "manifestArtifactId": "app-production-123",
+      "moniker": {
+        "app": "myapp"
+      },
+      "name": "Deploy Production App",
+      "refId": "4",
+      "relationships": {
+        "loadBalancers": [],
+        "securityGroups": []
+      },
+      "requiredArtifactIds": [
+        "docker-image-123"
+      ],
+      "requisiteStageRefIds": [
+        "3"
+      ],
+      "source": "artifact",
+      "type": "deployManifest"
+    },
+    {
+      "account": "default",
+      "cloudProvider": "kubernetes",
+      "manifestArtifactAccount": "gcs-rails-lab-264600",
+      "manifestArtifactId": "service-production-123",
+      "moniker": {
+        "app": "myapp"
+      },
+      "name": "Deploy  Production Service",
+      "refId": "5",
+      "relationships": {
+        "loadBalancers": [],
+        "securityGroups": []
+      },
+      "requisiteStageRefIds": [
+        "3"
+      ],
+      "source": "artifact",
+      "type": "deployManifest"
+    }
+  ],
+  "triggers": [
+    {
+      "account": "gcr",
+      "attributeConstraints": {},
+      "enabled": true,
+      "expectedArtifactIds": [
+        "docker-image-123"
+      ],
+      "organization": "rails-lab-264600",
+      "payloadConstraints": {
+        "tag": "gcr.io/rails-lab-264600/sample-app:.*"
+      },
+      "pubsubSystem": "google",
+      "registry": "gcr.io",
+      "repository": "rails-lab-264600/sample-app",
+      "subscriptionName": "gcr-triggers",
+      "tag": ".*",
+      "type": "pubsub"
+    }
+  ],
+  "updateTs": "1578510165903"
+}
